@@ -1,5 +1,7 @@
 package com.seinoindomobil.dev.epod.presentation.ui.login
 
+import android.util.Log
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -19,40 +21,39 @@ import javax.inject.Inject
 @HiltViewModel
 class LoginViewModel @Inject constructor(
     private val loginUseCase: LoginUseCase,
-    private val tokenManager: AppDatastore
+    private val datastore: AppDatastore
 ) : ViewModel() {
 
-    var state by mutableStateOf(LoginState())
-    var token by mutableStateOf("")
-
-    init {
-        viewModelScope.launch(Dispatchers.IO) {
-            tokenManager.getUserToken.collect {
-                withContext(Dispatchers.Main) {
-                    token = it
-                }
-            }
-        }
-    }
+    private val _loginState: MutableState<LoginState> = mutableStateOf(LoginState())
+    val loginState: LoginState by _loginState
 
     fun login(username: String, password: String) {
-        state = state.copy(isLoading = true)
+        _loginState.value.isLoading
         viewModelScope.launch {
             loginUseCase.execute(LoginRequest(username, password)).collect { result ->
                 when (result) {
                     is Resource.Success -> {
-                        state = state.copy(
-                            login = result.data, error = null, isLoading = false
+                        _loginState.value = LoginState().copy(
+                            isLoading = false,
+                            login = result.data,
+                            error = null
                         )
-                        saveToken(state.login?.token.toString())
+                        saveToken(result.data?.token.toString())
+                        Log.d("TAG", "login:  ${result.data?.token}")
                     }
                     is Resource.Error -> {
-                        state = state.copy(
-                            isLoading = false, login = null, error = result.message
+                        _loginState.value = LoginState().copy(
+                            isLoading = false,
+                            login = null,
+                            error = result.message.toString()
                         )
                     }
                     is Resource.Loading -> {
-                        state = state.copy(isLoading = true)
+                        _loginState.value = LoginState().copy(
+                            isLoading = true,
+                            login = null,
+                            error = null
+                        )
                     }
                 }
             }
@@ -61,13 +62,7 @@ class LoginViewModel @Inject constructor(
 
     fun saveToken(token: String) {
         viewModelScope.launch(Dispatchers.IO) {
-            tokenManager.saveUserToken(token)
-        }
-    }
-
-    fun deleteToken() {
-        viewModelScope.launch(Dispatchers.IO) {
-            tokenManager.deleteToken()
+            datastore.saveUserToken(token)
         }
     }
 }

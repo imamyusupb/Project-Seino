@@ -27,6 +27,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
@@ -38,20 +39,18 @@ import com.seinoindomobil.dev.epod.domain.model.OnBoarding
 import com.seinoindomobil.dev.epod.presentation.theme.Blue500
 import com.seinoindomobil.dev.epod.presentation.theme.Grey
 import com.seinoindomobil.dev.epod.presentation.theme.Poppins
+import com.seinoindomobil.dev.epod.presentation.ui.login.LoginViewModel
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalPagerApi::class)
 @Composable
 fun OnBoardingScreen(
-    navController: NavController
+    navController: NavController,
+    viewmodel: OnBoardingViewModel = hiltViewModel()
 ) {
     val items = OnBoarding.getData()
     val scope = rememberCoroutineScope()
     val pagerState = rememberPagerState()
-
-    val context = LocalContext.current
-    val appDatastore = AppDatastore.getInstance(context)!!
-
 
     Column(modifier = Modifier.fillMaxSize()) {
         TopBoardSection(navController = navController)
@@ -79,9 +78,7 @@ fun OnBoardingScreen(
                     pagerState.scrollToPage(pagerState.currentPage + 1)
                 }
                 else {
-                    scope.launch {
-                        appDatastore.saveOnBoardStatus(true)
-                    }
+                    viewmodel.saveOnBoardingStatus(isCompleted = true)
                     navController.navigate("login_screen")
                 }
             }
@@ -97,7 +94,9 @@ fun TopBoardSection(
 ) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.SpaceBetween, modifier = Modifier.padding(12.dp).fillMaxWidth()
+        horizontalArrangement = Arrangement.SpaceBetween, modifier = Modifier
+            .padding(12.dp)
+            .fillMaxWidth()
     ) {
         Image(
             painter = painterResource(id = drawable.img_epod),

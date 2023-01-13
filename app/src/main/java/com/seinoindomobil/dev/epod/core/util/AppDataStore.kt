@@ -1,62 +1,71 @@
 package com.seinoindomobil.dev.epod.core.util
 
-import android.annotation.SuppressLint
 import android.content.Context
 import androidx.datastore.core.DataStore
-import androidx.datastore.preferences.core.Preferences
-import androidx.datastore.preferences.core.booleanPreferencesKey
-import androidx.datastore.preferences.core.edit
-import androidx.datastore.preferences.core.stringPreferencesKey
+import androidx.datastore.preferences.core.*
 import androidx.datastore.preferences.preferencesDataStore
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.catch
+
 import kotlinx.coroutines.flow.map
+import java.io.IOException
 
-class AppDatastore(private val context: Context) {
 
-    private val Context.datastore: DataStore<Preferences> by preferencesDataStore(name ="app_datastore")
+class AppDatastore(context: Context) {
 
     companion object {
+        val Context.datastore: DataStore<Preferences> by preferencesDataStore(name = "app_datastore")
         private val TOKEN = stringPreferencesKey(name = "token")
-        private val ONBOARD = booleanPreferencesKey("completed")
+        private val ONBOARD = booleanPreferencesKey("onboard")
+    }
 
-        @SuppressLint("StaticFieldLeak")
-        var INSTANCE: AppDatastore? = null
-        fun getInstance(base: Context): AppDatastore? {
-            if (INSTANCE == null) {
-                synchronized(AppDatastore::class.java) {
-                    INSTANCE = AppDatastore(base.applicationContext)
-                }
-            }
+    private val dataStore = context.datastore
 
-            return INSTANCE
+    suspend fun saveOnBoardState(isCompleted: Boolean) {
+        dataStore.edit { preferences ->
+            preferences[ONBOARD] = isCompleted
         }
     }
 
-    suspend fun saveOnBoardStatus(isCompleted : Boolean) {
-        context.datastore.edit { key ->
-            key[ONBOARD] = isCompleted
-        }
+    fun readOnBoardingState(): Flow<Boolean> {
+        return dataStore.data
+            .catch { exception ->
+                if (exception is IOException) {
+                    emit(emptyPreferences())
+                } else {
+                    throw exception
+                }
+            }
+            .map { preferences ->
+                val onBoardingState = preferences[ONBOARD] ?: false
+                onBoardingState
+            }
     }
 
     suspend fun saveUserToken(token: String) {
-        context.datastore.edit { key ->
-            key[TOKEN] = token
+        dataStore.edit { preferences ->
+            preferences[TOKEN] = token
         }
     }
 
-    val getUserToken: Flow<String> = context.datastore.data.map { preferences ->
-        preferences[TOKEN] ?: ""
+    fun readUserTokenState(): Flow<String> {
+        return dataStore.data
+            .catch { exception ->
+                if (exception is IOException) {
+                    emit(emptyPreferences())
+                } else {
+                    throw exception
+                }
+            }
+            .map { preferences ->
+                val tokenState = preferences[TOKEN] ?: ""
+                tokenState
+            }
     }
-
-    val getOnboardStatus: Flow<Boolean> = context.datastore.data.map { preferences ->
-        preferences[ONBOARD] ?: false
-    }
-
 
     suspend fun deleteToken() {
-        context.datastore.edit { preferences ->
+        dataStore.edit { preferences ->
             preferences.remove(TOKEN)
         }
     }
-
 }

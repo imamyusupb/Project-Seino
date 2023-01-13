@@ -1,5 +1,6 @@
 package com.seinoindomobil.dev.epod.presentation.ui.splashscreen
 
+import android.util.Log
 import android.view.animation.OvershootInterpolator
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
@@ -22,6 +23,7 @@ import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.seinoindomobil.dev.epod.R
@@ -32,12 +34,12 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collect
 
 @Composable
-fun SplashScreen(navController: NavController) {
+fun SplashScreen(
+    navController: NavController,
+    loginViewModel: LoginViewModel = hiltViewModel(),
+    splashViewModel: SplashViewModel = hiltViewModel()
+) {
     var startAnimation by remember { mutableStateOf(false) }
-
-    val context = LocalContext.current
-    val appDatastore = AppDatastore.getInstance(context)!!
-    val tokenViewModel :LoginViewModel by viewModel()
 
     val alphaAnim = animateFloatAsState(
         targetValue = if (startAnimation) 0.8f else 0f,
@@ -48,18 +50,22 @@ fun SplashScreen(navController: NavController) {
             })
     )
 
-    val onboardState = appDatastore.getOnboardStatus.collectAsState(initial = false)
-
     LaunchedEffect(key1 = true) {
+        val token = splashViewModel.tokenIstEmpty.value
+        val screen by splashViewModel.startDestination
+
         startAnimation = true
         delay(3000)
         navController.popBackStack()
 
 
-        if (onboardState.value){
-            navController.navigate("login_screen")
-        }else{
-            navController.navigate("onboarding_screen")
+//        if (splashViewModel.onBoardingCompleted.value){
+//            val screen by splashViewModel.startDestination
+//            navController.navigate(screen)
+//        }
+        when (token) {
+            "" -> navController.navigate(screen)
+            else -> navController.navigate(screen)
         }
     }
     Splash(scale = alphaAnim.value)

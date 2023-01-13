@@ -1,7 +1,6 @@
 package com.seinoindomobil.dev.epod.presentation.ui.login
 
 import android.annotation.SuppressLint
-import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
@@ -19,7 +18,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -30,15 +28,10 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavController
 import com.seinoindomobil.dev.epod.R
-import com.seinoindomobil.dev.epod.core.util.AppDatastore
-import com.seinoindomobil.dev.epod.domain.model.Login
 import com.seinoindomobil.dev.epod.presentation.theme.Blue500
 import com.seinoindomobil.dev.epod.presentation.theme.Poppins
-import com.seinoindomobil.dev.epod.presentation.ui.login.component.LoginState
-import kotlinx.coroutines.launch
 
 @SuppressLint("UnrememberedMutableState")
 @Composable
@@ -54,7 +47,6 @@ fun LoginScreen(
     val isFormValid by derivedStateOf { username.isNotBlank() && password.isNotBlank() && password.length < 9 }
 
     Box(Modifier.fillMaxSize(), contentAlignment = Alignment.TopCenter) {
-        val state = viewModel.state
 
         Image(
             painter = painterResource(id = R.drawable.background_login),
@@ -158,7 +150,7 @@ fun LoginScreen(
                     Spacer(Modifier.height(60.dp))
                     Button(
                         onClick = {
-                            viewModel.login(username, password)
+                            viewModel.login(username,password)
                         },
                         modifier = Modifier
                             .fillMaxWidth()
@@ -180,15 +172,15 @@ fun LoginScreen(
                         modifier = Modifier.fillMaxSize(),
                         contentAlignment = Alignment.Center
                     ) {
-                        if (state.isLoading) {
+                        if (viewModel.loginState.isLoading) {
                             CircularProgressIndicator()
                         }
-                        if (state.error != null) {
-                            Toast.makeText(LocalContext.current, state.error, Toast.LENGTH_LONG)
+                        if (viewModel.loginState.error != null) {
+                            Toast.makeText(LocalContext.current, viewModel.loginState.error, Toast.LENGTH_LONG)
                                 .show()
                         }
-                        if (state.login != null) {
-                            LaunchedEffect(key1 = state) {
+                        if (viewModel.loginState.login != null) {
+                            LaunchedEffect(key1 = viewModel.loginState) {
                                 navController.navigate("home_screen")
                             }
                         }

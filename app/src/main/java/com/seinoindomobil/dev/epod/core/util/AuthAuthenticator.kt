@@ -17,7 +17,7 @@ class AuthAuthenticator @Inject constructor (
 
     override fun authenticate(route: Route?, response: Response): Request? {
         val token = runBlocking {
-            tokenManager.getUserToken.first()
+            tokenManager.readUserTokenState().first()
         }
         return runBlocking {
             val newToken = getNewToken(token)
