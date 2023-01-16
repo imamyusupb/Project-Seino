@@ -7,7 +7,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.seinoindomobil.dev.epod.core.util.AppDatastore
+
 import com.seinoindomobil.dev.epod.core.util.Resource
 import com.seinoindomobil.dev.epod.data.remote.dto.login.LoginRequest
 import com.seinoindomobil.dev.epod.domain.usecase.LoginUseCase
@@ -21,7 +21,6 @@ import javax.inject.Inject
 @HiltViewModel
 class LoginViewModel @Inject constructor(
     private val loginUseCase: LoginUseCase,
-    private val datastore: AppDatastore
 ) : ViewModel() {
 
     private val _loginState: MutableState<LoginState> = mutableStateOf(LoginState())
@@ -38,8 +37,6 @@ class LoginViewModel @Inject constructor(
                             login = result.data,
                             error = null
                         )
-                        saveToken(result.data?.token.toString())
-                        Log.d("TAG", "login:  ${result.data?.token}")
                     }
                     is Resource.Error -> {
                         _loginState.value = LoginState().copy(
@@ -62,7 +59,7 @@ class LoginViewModel @Inject constructor(
 
     fun saveToken(token: String) {
         viewModelScope.launch(Dispatchers.IO) {
-            datastore.saveUserToken(token)
+            loginUseCase.setToken(token)
         }
     }
 }

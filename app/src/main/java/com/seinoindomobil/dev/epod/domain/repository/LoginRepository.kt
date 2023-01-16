@@ -8,4 +8,6 @@ import kotlinx.coroutines.flow.Flow
 interface LoginRepository {
 
     suspend fun postLogin(loginRequest: LoginRequest):Flow<Resource<Login>>
+    suspend fun setToken(token:String)
+    val getToken :Flow<String>
 }

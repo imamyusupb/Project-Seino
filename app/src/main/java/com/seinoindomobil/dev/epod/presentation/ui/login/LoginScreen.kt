@@ -1,6 +1,7 @@
 package com.seinoindomobil.dev.epod.presentation.ui.login
 
 import android.annotation.SuppressLint
+import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
@@ -30,8 +31,10 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.seinoindomobil.dev.epod.R
+import com.seinoindomobil.dev.epod.data.remote.dto.login.LoginDTO
 import com.seinoindomobil.dev.epod.presentation.theme.Blue500
 import com.seinoindomobil.dev.epod.presentation.theme.Poppins
+import com.seinoindomobil.dev.epod.presentation.ui.login.component.LoginState
 
 @SuppressLint("UnrememberedMutableState")
 @Composable
@@ -182,6 +185,8 @@ fun LoginScreen(
                         if (viewModel.loginState.login != null) {
                             LaunchedEffect(key1 = viewModel.loginState) {
                                 navController.navigate("home_screen")
+                               viewModel.saveToken(LoginState().login?.token.toString())
+                                Log.d("TAG", "LoginScreen: ${viewModel.saveToken(LoginState().login?.token.toString())}")
                             }
                         }
                     }

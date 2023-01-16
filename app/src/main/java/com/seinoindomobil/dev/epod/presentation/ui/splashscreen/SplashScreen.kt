@@ -1,11 +1,13 @@
 package com.seinoindomobil.dev.epod.presentation.ui.splashscreen
 
-import android.util.Log
 import android.view.animation.OvershootInterpolator
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -14,8 +16,6 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -24,22 +24,18 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.seinoindomobil.dev.epod.R
-import com.seinoindomobil.dev.epod.core.util.AppDatastore
 import com.seinoindomobil.dev.epod.presentation.theme.Poppins
-import com.seinoindomobil.dev.epod.presentation.ui.login.LoginViewModel
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.collect
 
 @Composable
 fun SplashScreen(
     navController: NavController,
-    loginViewModel: LoginViewModel = hiltViewModel(),
     splashViewModel: SplashViewModel = hiltViewModel()
 ) {
     var startAnimation by remember { mutableStateOf(false) }
+    val token = splashViewModel.tokenIstEmpty.collectAsState(initial = "")
 
     val alphaAnim = animateFloatAsState(
         targetValue = if (startAnimation) 0.8f else 0f,
@@ -51,21 +47,14 @@ fun SplashScreen(
     )
 
     LaunchedEffect(key1 = true) {
-        val token = splashViewModel.tokenIstEmpty.value
-        val screen by splashViewModel.startDestination
-
         startAnimation = true
         delay(3000)
         navController.popBackStack()
 
-
-//        if (splashViewModel.onBoardingCompleted.value){
-//            val screen by splashViewModel.startDestination
-//            navController.navigate(screen)
-//        }
-        when (token) {
-            "" -> navController.navigate(screen)
-            else -> navController.navigate(screen)
+        if (token.value.isNotEmpty()){
+            navController.navigate(splashViewModel.startDestination.value)
+        }else if (splashViewModel.onBoardingCompleted.value){
+            navController.navigate(splashViewModel.startDestination.value)
         }
     }
     Splash(scale = alphaAnim.value)

@@ -8,18 +8,14 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Text
 import androidx.compose.material.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
-import com.seinoindomobil.dev.epod.R.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
@@ -28,18 +24,16 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.rememberPagerState
-import com.seinoindomobil.dev.epod.core.util.AppDatastore
+import com.seinoindomobil.dev.epod.R.*
 import com.seinoindomobil.dev.epod.domain.model.OnBoarding
 import com.seinoindomobil.dev.epod.presentation.theme.Blue500
 import com.seinoindomobil.dev.epod.presentation.theme.Grey
 import com.seinoindomobil.dev.epod.presentation.theme.Poppins
-import com.seinoindomobil.dev.epod.presentation.ui.login.LoginViewModel
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalPagerApi::class)
@@ -107,7 +101,7 @@ fun TopBoardSection(
             fontFamily = Poppins,
             fontWeight = FontWeight.Bold
         ), modifier = Modifier.clickable {
-            navController.navigate("login_screen")
+                navController.navigate("login_screen")
         })
     }
 }
@@ -173,6 +167,7 @@ fun Indicator(isSelected: Boolean) {
 
 @Composable
 fun BottomBoardingSection(
+    modifier: Modifier = Modifier,
     size: Int,
     index: Int,
     onBackClick: () -> Unit = {},

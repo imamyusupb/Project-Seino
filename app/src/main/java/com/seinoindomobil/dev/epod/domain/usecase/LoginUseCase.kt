@@ -14,4 +14,7 @@ class LoginUseCase @Inject constructor(
     suspend fun execute(loginRequest: LoginRequest): Flow<Resource<Login>> {
         return repository.postLogin(loginRequest)
     }
+
+    suspend fun setToken(token:String) = repository.setToken(token)
+    val getToken : Flow<String> = repository.getToken
 }
