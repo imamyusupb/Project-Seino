@@ -1,6 +1,6 @@
 package com.seinoindomobil.dev.epod.data.mapper
 
-import com.seinoindomobil.dev.epod.data.remote.dto.login.LoginDTO
+import com.seinoindomobil.dev.epod.data.remote.auth.dto.LoginDTO
 import com.seinoindomobil.dev.epod.domain.model.Login
 
 fun LoginDTO.toLoginDomain(): Login {
@@ -19,8 +19,8 @@ fun LoginDTO.toLoginDomain(): Login {
         gender = result.data.gender,
         name = result.data.name,
         company = result.data.company,
-        token = result.signature?.access_token,
-        refresh_token = result.signature?.refresh_token,
+        token = result.signature.access_token,
+        refresh_token = result.signature.refresh_token,
         message = message
     )
 }

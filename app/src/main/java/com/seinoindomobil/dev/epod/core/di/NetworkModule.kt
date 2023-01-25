@@ -4,7 +4,7 @@ import com.seinoindomobil.dev.epod.BuildConfig
 
 import com.seinoindomobil.dev.epod.core.util.AuthAuthenticator
 import com.seinoindomobil.dev.epod.core.util.AuthInterceptor
-import com.seinoindomobil.dev.epod.data.local.datastore.DataStorePreferenceStorage
+import com.seinoindomobil.dev.epod.data.local.datastore.DataStoreRepository
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -47,11 +47,11 @@ object NetworkModule {
 
     @Singleton
     @Provides
-    fun provideAuthInterceptor(tokenManager: DataStorePreferenceStorage): AuthInterceptor =
+    fun provideAuthInterceptor(tokenManager: DataStoreRepository): AuthInterceptor =
         AuthInterceptor(tokenManager)
 
     @Singleton
     @Provides
-    fun provideAuthAuthenticator(tokenManager: DataStorePreferenceStorage): AuthAuthenticator =
+    fun provideAuthAuthenticator(tokenManager: DataStoreRepository): AuthAuthenticator =
         AuthAuthenticator(tokenManager)
 }

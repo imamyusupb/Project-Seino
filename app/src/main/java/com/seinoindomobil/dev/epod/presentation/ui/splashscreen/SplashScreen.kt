@@ -25,17 +25,18 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import androidx.navigation.NavHostController
 import com.seinoindomobil.dev.epod.R
 import com.seinoindomobil.dev.epod.presentation.theme.Poppins
 import kotlinx.coroutines.delay
 
 @Composable
 fun SplashScreen(
-    navController: NavController,
+    navController: NavHostController,
     splashViewModel: SplashViewModel = hiltViewModel()
 ) {
     var startAnimation by remember { mutableStateOf(false) }
-    val token = splashViewModel.tokenIstEmpty.collectAsState(initial = "")
+
 
     val alphaAnim = animateFloatAsState(
         targetValue = if (startAnimation) 0.8f else 0f,
@@ -50,12 +51,9 @@ fun SplashScreen(
         startAnimation = true
         delay(3000)
         navController.popBackStack()
+        navController.navigate("profile_screen")
+//        navController.navigate(splashViewModel.startDestination.value.destination.toString())
 
-        if (token.value.isNotEmpty()){
-            navController.navigate(splashViewModel.startDestination.value)
-        }else if (splashViewModel.onBoardingCompleted.value){
-            navController.navigate(splashViewModel.startDestination.value)
-        }
     }
     Splash(scale = alphaAnim.value)
 }

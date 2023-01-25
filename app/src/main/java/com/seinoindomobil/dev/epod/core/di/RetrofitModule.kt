@@ -1,6 +1,7 @@
 package com.seinoindomobil.dev.epod.core.di
 
-import com.seinoindomobil.dev.epod.data.remote.LoginApi
+import com.seinoindomobil.dev.epod.data.remote.auth.LoginApi
+import com.seinoindomobil.dev.epod.data.remote.dashboard.DashboardApi
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -16,6 +17,10 @@ object RetrofitModule {
     @Provides
     @Singleton
     fun provideLoginService(retrofit: Retrofit): LoginApi = retrofit.create(LoginApi::class.java)
+
+    @Provides
+    @Singleton
+    fun provideDashboardService(retrofit: Retrofit):DashboardApi = retrofit.create(DashboardApi::class.java)
 
 
 }

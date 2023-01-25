@@ -1,12 +1,11 @@
-package com.seinoindomobil.dev.epod.data.remote.repository
+package com.seinoindomobil.dev.epod.data.remote.auth.repository
 
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.seinoindomobil.dev.epod.core.util.Resource
-import com.seinoindomobil.dev.epod.data.local.datastore.PreferenceStorage
 import com.seinoindomobil.dev.epod.data.mapper.toLoginDomain
-import com.seinoindomobil.dev.epod.data.remote.LoginApi
-import com.seinoindomobil.dev.epod.data.remote.dto.login.LoginRequest
+import com.seinoindomobil.dev.epod.data.remote.auth.LoginApi
+import com.seinoindomobil.dev.epod.data.remote.auth.dto.LoginRequest
 import com.seinoindomobil.dev.epod.domain.model.Login
 import com.seinoindomobil.dev.epod.domain.repository.LoginRepository
 import kotlinx.coroutines.flow.Flow
@@ -14,13 +13,10 @@ import kotlinx.coroutines.flow.flow
 import retrofit2.HttpException
 import java.io.IOException
 import javax.inject.Inject
-import javax.inject.Singleton
 
 class LoginRepositoryImpl @Inject constructor(
     private val loginApi: LoginApi,
-    private val dataStore: PreferenceStorage
-) : LoginRepository {
-
+) : LoginRepository{
     override suspend fun postLogin(loginRequest: LoginRequest): Flow<Resource<Login>> = flow {
         try {
             emit(Resource.Loading<Login>())
@@ -40,8 +36,4 @@ class LoginRepositoryImpl @Inject constructor(
             emit(Resource.Error<Login>("Couldn't reach server. Check your internet connection."))
         }
     }
-
-    override suspend fun setToken(token: String) = dataStore.setUserToken(token)
-    override val getToken: Flow<String> = dataStore.getUserToken
-
 }

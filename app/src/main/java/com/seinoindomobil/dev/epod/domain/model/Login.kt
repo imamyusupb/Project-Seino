@@ -15,7 +15,7 @@ data class Login(
     val gender: String,
     val name: String,
     val company: String,
-    val token: String?,
-    val refresh_token: String?,
+    val token: String,
+    val refresh_token: String,
     var message :String? = null
 )

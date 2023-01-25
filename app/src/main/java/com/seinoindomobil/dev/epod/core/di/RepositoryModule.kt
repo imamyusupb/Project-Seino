@@ -1,11 +1,11 @@
 package com.seinoindomobil.dev.epod.core.di
 
-import com.seinoindomobil.dev.epod.data.local.datastore.PreferenceStorage
-import com.seinoindomobil.dev.epod.data.remote.LoginApi
-import com.seinoindomobil.dev.epod.data.remote.repository.LoginRepositoryImpl
-import com.seinoindomobil.dev.epod.data.remote.repository.OnBoardingRepositoryImpl
+import com.seinoindomobil.dev.epod.data.remote.auth.LoginApi
+import com.seinoindomobil.dev.epod.data.remote.auth.repository.LoginRepositoryImpl
+import com.seinoindomobil.dev.epod.data.remote.dashboard.DashboardApi
+import com.seinoindomobil.dev.epod.data.remote.dashboard.repository.DashboardRepositoryImpl
+import com.seinoindomobil.dev.epod.domain.repository.DashboardRepository
 import com.seinoindomobil.dev.epod.domain.repository.LoginRepository
-import com.seinoindomobil.dev.epod.domain.repository.OnBoardingRepository
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -18,16 +18,13 @@ object RepositoryModule {
 
     @Provides
     @Singleton
-    fun provideLoginRepository(
-        api: LoginApi,
-        preferenceStorage: PreferenceStorage
-    ): LoginRepository {
-        return LoginRepositoryImpl(api, preferenceStorage)
+    fun provideLoginRepository(api: LoginApi, ): LoginRepository {
+        return LoginRepositoryImpl(api)
     }
 
     @Provides
     @Singleton
-    fun provideOnBoardingRepository(preferenceStorage: PreferenceStorage): OnBoardingRepository {
-        return OnBoardingRepositoryImpl(preferenceStorage)
+    fun provideDashboardRepository(api :DashboardApi) :DashboardRepository {
+        return DashboardRepositoryImpl(api)
     }
 }

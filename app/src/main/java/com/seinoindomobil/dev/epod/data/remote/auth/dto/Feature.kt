@@ -1,4 +1,4 @@
-package com.seinoindomobil.dev.epod.data.remote.dto.login
+package com.seinoindomobil.dev.epod.data.remote.auth.dto
 
 data class Feature(
     val category: String,

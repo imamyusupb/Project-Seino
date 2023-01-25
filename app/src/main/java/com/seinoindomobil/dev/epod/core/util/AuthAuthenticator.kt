@@ -1,8 +1,8 @@
 package com.seinoindomobil.dev.epod.core.util
 
-import com.seinoindomobil.dev.epod.data.local.datastore.DataStorePreferenceStorage
-import com.seinoindomobil.dev.epod.data.remote.LoginApi
-import com.seinoindomobil.dev.epod.data.remote.dto.login.LoginDTO
+import com.seinoindomobil.dev.epod.data.local.datastore.DataStoreRepository
+import com.seinoindomobil.dev.epod.data.remote.auth.LoginApi
+import com.seinoindomobil.dev.epod.data.remote.auth.dto.LoginDTO
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 import okhttp3.*
@@ -11,13 +11,13 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import javax.inject.Inject
 
-class AuthAuthenticator @Inject constructor (
-    private val tokenManager: DataStorePreferenceStorage,
-): Authenticator {
+class AuthAuthenticator @Inject constructor(
+    private val tokenManager: DataStoreRepository
+) : Authenticator {
 
     override fun authenticate(route: Route?, response: Response): Request? {
         val token = runBlocking {
-            tokenManager.getUserToken.first()
+            tokenManager.getToken().first()
         }
         return runBlocking {
             val newToken = getNewToken(token)
@@ -27,9 +27,12 @@ class AuthAuthenticator @Inject constructor (
             }
 
             newToken.body()?.let {
-                tokenManager.setUserToken(it.result.signature?.access_token.toString())
+                tokenManager.saveToken(
+                    it.result.signature.access_token
+                )
+
                 response.request.newBuilder()
-                    .header("Authorization", "Bearer ${it.result.signature?.access_token}")
+                    .header("Authorization", "Bearer ${it.result.signature.access_token}")
                     .build()
             }
         }
